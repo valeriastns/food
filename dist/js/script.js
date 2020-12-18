@@ -38,10 +38,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
     ///timer
 
-    const deadline = '2020-12-17';
+    const deadline = '2020-12-20';
 
     function getTimeRemaining(endtime) {
-        const t = Date.parse(endtime) - Date.parse(new Date()),
+        const timeDiff = Date.parse(endtime) - Date.parse(new Date()),
+        t = (timeDiff >= 0) ? timeDiff : 0,
             days = Math.floor(t / (1000 * 60 * 60 * 24)),
             hours = Math.floor((t / (1000 * 60 * 60) % 24)),
             minutes = Math.floor((t / 1000 / 60) % 60),
@@ -64,6 +65,7 @@ window.addEventListener('DOMContentLoaded', () => {
             minutes = timer.querySelector('#minutes'),
             seconds = timer.querySelector('#seconds'),
             timeInterval = setInterval(updateClock, 1000);
+            updateClock();
 
         function updateClock() {
             const t = getTimeRemaining(endtime);
@@ -92,6 +94,7 @@ window.addEventListener('DOMContentLoaded', () => {
         modal.classList.add('show');
         modal.classList.remove('hide');
         document.body.style.overflow = 'hidden';
+        clearInterval(modalTimerId);
     }
     modalBtns.forEach((item) => {
         item.addEventListener('click', (openModal))
@@ -117,7 +120,17 @@ window.addEventListener('DOMContentLoaded', () => {
         if (e.code === 'Escape' && modal.classList.contains('show')) {
             closeModal();
         }
-
     });
+
+    const modalTimerId = setInterval(openModal, 5000);
+
+    function showModalByScroll () {
+        if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+            openModal();
+            window.removeEventListener('scroll', showModalByScroll);
+        }
+    }
+
+    window.addEventListener('scroll', showModalByScroll);
 
 });
